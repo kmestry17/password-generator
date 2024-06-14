@@ -1,28 +1,33 @@
 import React, { useState } from "react";
 import { Form, Button, InputGroup, FormControl } from "react-bootstrap";
+import axios from "axios";
 
 const PasswordGenerator = () => {
   const [length, setLength] = useState(12);
   const [includeNumbers, setIncludeNumbers] = useState(true);
   const [includeSymbols, setIncludeSymbols] = useState(true);
   const [password, setPassword] = useState("");
+  const [outputLabel, setOutputLabel] = useState("");
 
-  const generatePassword = () => {
-    const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const numbers = "0123456789";
-    const symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
-
-    let characters = letters;
-    if (includeNumbers) characters += numbers;
-    if (includeSymbols) characters += symbols;
-
-    let generatedPassword = "";
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      generatedPassword += characters[randomIndex];
+  const generatePassword = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/generate-password",
+        {
+          params: {
+            length,
+            includeNumbers,
+            includeSymbols,
+          },
+        }
+      );
+      setOutputLabel("Generated Password:");
+      setPassword(response.data.password);
+    } catch (error) {
+      setOutputLabel("Error Generating Password:");
+      setPassword("API down. Please try again later.");
+      console.error("Error generating password:", error);
     }
-
-    setPassword(generatedPassword);
   };
 
   return (
@@ -62,7 +67,7 @@ const PasswordGenerator = () => {
       </Form>
       {password && (
         <div className="mt-3">
-          <h3>Your Password:</h3>
+          <h3>{outputLabel}</h3>
           <p className="alert alert-success">{password}</p>
         </div>
       )}
