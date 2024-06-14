@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import PasswordGenerator from "./modules/PasswordGenerator";
 import "bootstrap/dist/css/bootstrap.min.css";
